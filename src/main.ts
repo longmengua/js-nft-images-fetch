@@ -4,7 +4,11 @@ import fs from 'fs';
 import * as input from '../input/source.json';
 
 let count = 0;
-export class Utility {
+const json = (input as unknown as any).default;
+
+console.log('length', json.length);
+
+class Utility {
   static download_image_by_url = async (value: {
     nft_token_address: string;
     nft_image_url: string;
@@ -13,6 +17,10 @@ export class Utility {
     folderName: string;
   }) => {
     const { folderName } = option;
+    if(value.nft_image_url === null) {
+      console.error('address without image url : ' + value.nft_token_address);
+      return;
+    }
     try {
       const dir = path.join(__dirname, `../${folderName}`);
       if (!fs.existsSync(dir)) {
@@ -20,69 +28,28 @@ export class Utility {
       }
       const isPng = value.nft_image_url.includes('.png')
       const filePath = path.join(dir, `${value.nft_token_address}${isPng ? '.png' : '.jpg'}`);
+      if (fs.existsSync(filePath)) {
+        console.log('already existed : ' + value.nft_token_address)
+        return;
+      }
       const response = await axios({
         method: 'GET',
         url: value.nft_image_url,
         responseType: 'stream',
       });
-      await response.data.pipe(fs.createWriteStream(filePath));
-      return 1;
+      const w = await response.data.pipe(fs.createWriteStream(filePath));
+      w.on('close', () => {
+        count++;
+        console.log('total success number : ' + count);
+      });
     } catch (e) {
-      console.error(value);
-      return 0;
+      console.error('download failed : ' + value.nft_image_url);
     }
   };
 }
-const json = (input as unknown as any).default;
-console.log('length', json.length);
+
 if (Array.isArray(json)) {
-  const count1 = json.slice(0, 1000).map((v: any) => Utility.download_image_by_url(v, {
+  json.slice(0, 24578).map((v: any) => Utility.download_image_by_url(v, {
     folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count1:${count1.length}`);
-
-  const count2 = json.slice(1001, 2000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count2:${count2.length}`);
-
-  const count3 = json.slice(2001, 3000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count3:${count3.length}`);
-
-  const count4 = json.slice(3001, 4000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count4:${count4.length}`);
-
-  const count5 = json.slice(4001, 5000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count5:${count5.length}`);
-
-  const count6 = json.slice(5001, 6000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count6:${count6.length}`);
-
-  const count7 = json.slice(6001, 7000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count7:${count7.length}`);
-
-  const count8 = json.slice(7001, 8000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count8:${count8.length}`);
-
-  const count9 = json.slice(8001, 9000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count9:${count9.length}`);
-
-  const count10 = json.slice(9001, 10000).map((v: any) => Utility.download_image_by_url(v, {
-    folderName: 'output'
-  })).filter(async v => await v === 1);
-  console.log(`count10:${count10.length}`);
+  }))
 }
