@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start": "npx ts-node src/main.ts"
+    "start": "npx ts-node src/main.ts",
+    "check": "npx ts-node src/check.ts"
   },
   "repository": {
     "type": "git",

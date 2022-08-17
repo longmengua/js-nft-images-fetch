@@ -29,7 +29,7 @@ class Utility {
       const isPng = value.nft_image_url.includes('.png')
       const filePath = path.join(dir, `${value.nft_token_address}${isPng ? '.png' : '.jpg'}`);
       if (fs.existsSync(filePath)) {
-        console.log('already existed : ' + value.nft_token_address)
+        // console.log('already existed : ' + value.nft_token_address)
         return;
       }
       const response = await axios({
