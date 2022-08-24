@@ -2,11 +2,13 @@ import axios from 'axios';
 import path from 'path';
 import fs from 'fs';
 import * as input from '../input/source.json';
+import * as input1 from '../input/missing.json';
 
 let count = 0;
 const json = (input as unknown as any).default;
+const missing = (input1 as unknown as any).default;
 
-console.log('length', json.length);
+console.log('length', missing.length);
 
 class Utility {
   static download_image_by_url = async (value: {
@@ -18,7 +20,7 @@ class Utility {
   }) => {
     const { folderName } = option;
     if(value.nft_image_url === null) {
-      console.error('address without image url : ' + value.nft_token_address);
+      console.error(`"${value.nft_token_address}",`);
       return;
     }
     try {
@@ -32,6 +34,7 @@ class Utility {
         // console.log('already existed : ' + value.nft_token_address)
         return;
       }
+      if (!missing.includes(value.nft_token_address)) return;
       const response = await axios({
         method: 'GET',
         url: value.nft_image_url,
@@ -49,7 +52,7 @@ class Utility {
 }
 
 if (Array.isArray(json)) {
-  json.slice(0, 24578).map((v: any) => Utility.download_image_by_url(v, {
+  json.map((v: any) => Utility.download_image_by_url(v, {
     folderName: 'output'
   }))
 }
